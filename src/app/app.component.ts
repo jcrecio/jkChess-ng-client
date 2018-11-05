@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { ChessEngineService } from '../engine/chess.engine.service';
 
 declare var $: any;
 declare var ChessBoard: any;
@@ -13,13 +14,14 @@ declare var ChessBoard: any;
 })
 @Injectable()
 export class AppComponent implements OnInit {
-  game: string;
   title = 'ngGlobalChess';
+
+  gameId: string;
   board: any;
   cfg: any;
   pendingMove: string;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private engineService: ChessEngineService) {
     this.cfg = {
       draggable: true,
       onDrop: (source, target, piece, newPos, oldPos, orientation) =>
@@ -32,10 +34,10 @@ export class AppComponent implements OnInit {
     const move = `${source}${target}`;
     this.moveRockIfCastle(move);
 
-    return this.http.post(`http://127.0.0.1:5000/game/${this.game}/board/move`, { move: move })
+    return this.engineService.doMove(this.gameId, move)
       .toPromise()
-      .then(response => this.http.post(`http://127.0.0.1:5000/game/${this.game}/board/moves/best`, {})
-        .toPromise())
+      .then(response => this.engineService.getBestMove(this.gameId))
+      .toPromise()
       .then((responseMove: any) => {
         const uciMove = responseMove.Move;
         this.moveCpu(uciMove.substring(0, 2) + '-' + uciMove.substring(2, 4));
