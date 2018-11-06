@@ -25,6 +25,6 @@ export class ChessEngineService {
     }
 
     public getGame(gameId: string): Observable<any> {
-        return this.http.get(`${this.formatGameUri(gameId)}/board/fen`);
+        return this.http.get(`${this.formatGameUri(gameId)}/fen`);
     }
 }

@@ -18,20 +18,15 @@ export class AppComponent implements OnInit {
 
   gameId: string;
   board: any;
-  cfg: any;
+  config: any;
   pendingMove: string;
 
   constructor(private http: HttpClient, private engineService: ChessEngineService) {
-    this.cfg = {
-      draggable: true,
-      onDrop: (source, target, piece, newPos, oldPos, orientation) =>
-        this.onDropHandler(source, target, piece, newPos, oldPos, orientation),
-      position: 'start'
-    };
+    this.config = this.getBoardConfig('start');
   }
 
   ngOnInit() {
-    this.board = ChessBoard('board', this.cfg);
+    this.board = ChessBoard('board', this.config);
   }
 
   onDropHandler(source, target, piece, newPos, oldPos, orientation) {
@@ -39,7 +34,9 @@ export class AppComponent implements OnInit {
     this.moveRockIfCastle(move);
 
     return this.engineService.doMove(this.gameId, move)
-      .toPromise().then(response => this.engineService.getBestMove(this.gameId))
+      .toPromise()
+      .then(response => this.engineService.getBestMove(this.gameId)
+      .toPromise())
       .then((responseMove: any) => {
         const uciMove = responseMove.Move;
         this.moveCpu(this.formatUciMoveToUiMove(uciMove));
@@ -78,16 +75,26 @@ export class AppComponent implements OnInit {
     }
   }
 
+  private formatUciMoveToUiMove(uciMove: any): any {
+    return `${uciMove.substring(0, 2)}-${uciMove.substring(2, 4)}`;
+  }
+
   setGame() {
     return this.engineService.getGame(this.gameId)
       .toPromise().then(response => this.setBoardPosition(response.Board));
   }
 
   private setBoardPosition(fenBoard: string) {
-    this.board = ChessBoard('board', fenBoard);
+    this.board = ChessBoard('board', this.getBoardConfig(fenBoard));
   }
 
-  private formatUciMoveToUiMove(uciMove: any): any {
-    return `${uciMove.substring(0, 2)}-${uciMove.substring(2, 4)}`;
+  private getBoardConfig(position) {
+    return {
+      draggable: true,
+      position: position,
+
+      onDrop: (source, target, piece, newPos, oldPos, orientation) =>
+        this.onDropHandler(source, target, piece, newPos, oldPos, orientation),
+    };
   }
 }
