@@ -30,17 +30,19 @@ export class AppComponent implements OnInit {
     };
   }
 
+  ngOnInit() {
+    this.board = ChessBoard('board', this.cfg);
+  }
+
   onDropHandler(source, target, piece, newPos, oldPos, orientation) {
     const move = `${source}${target}`;
     this.moveRockIfCastle(move);
 
     return this.engineService.doMove(this.gameId, move)
-      .toPromise()
-      .then(response => this.engineService.getBestMove(this.gameId))
-      .toPromise()
+      .toPromise().then(response => this.engineService.getBestMove(this.gameId))
       .then((responseMove: any) => {
         const uciMove = responseMove.Move;
-        this.moveCpu(uciMove.substring(0, 2) + '-' + uciMove.substring(2, 4));
+        this.moveCpu(this.formatUciMoveToUiMove(uciMove));
 
         return uciMove;
       });
@@ -76,7 +78,16 @@ export class AppComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
-    this.board = ChessBoard('board', this.cfg);
+  setGame() {
+    return this.engineService.getGame(this.gameId)
+      .toPromise().then(response => this.setBoardPosition(response.Board));
+  }
+
+  private setBoardPosition(fenBoard: string) {
+    this.board = ChessBoard('board', fenBoard);
+  }
+
+  private formatUciMoveToUiMove(uciMove: any): any {
+    return `${uciMove.substring(0, 2)}-${uciMove.substring(2, 4)}`;
   }
 }

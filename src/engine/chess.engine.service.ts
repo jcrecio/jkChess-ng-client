@@ -4,8 +4,10 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { IEngineService } from '../contracts/engine/engine.service';
 
-@Injectable()
-export class ChessEngineService implements IEngineService {
+@Injectable({
+    providedIn: 'root',
+})
+export class ChessEngineService {
     constructor(private http: HttpClient) {
 
     }
@@ -20,5 +22,9 @@ export class ChessEngineService implements IEngineService {
 
     private formatGameUri(gameId: string): string {
         return `${environment.configuration.engineUri}/game/${gameId}/board`;
+    }
+
+    public getGame(gameId: string): Observable<any> {
+        return this.http.get(`${this.formatGameUri(gameId)}/board/fen`);
     }
 }
