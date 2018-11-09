@@ -7,16 +7,25 @@
     </mat-expansion-panel-header>
     <mat-card>
       <mat-form-field id="game-selector">
-        <input matInput id="game-field-id" placeholder="Game" aria-label="Game" [matAutocomplete]="auto" [(ngModel)]="gameId">
+        <input matInput id="game-field-id" placeholder="Game" console-label="Game" [matAutocomplete]="auto" [(ngModel)]="gameId">
         <mat-autocomplete #auto="matAutocomplete">
           <mat-option *ngFor="let gameOption of gameOptions" [value]="gameOption.gameId">
-            <small>Game: {{gameOption.gameId}}</small>
+            <small>{{gameOption.gameId}}</small>
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
       <br>
-      <button color="secondary" mat-raised-button (click)="setGame()">Load game</button>
-      <button color="primary" mat-raised-button (click)="newGame()">New game</button>
+      <button class="game_button" color="secondary" mat-raised-button (click)="setGame()">Load game</button>
+      <button class="game_button" color="primary" mat-raised-button (click)="newGame()">New game</button>
+    </mat-card>
+    <mat-card>
+      <mat-card-subtitle>Options</mat-card-subtitle>
+      <button class="option_button" (click)="rotate()" mat-mini-fab color="primary" aria-placeholder="sd">
+        <mat-icon>autorenew</mat-icon>
+      </button>
+      <button class="option_button" (click)="cpuPlay()" mat-mini-fab color="primary">
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
     </mat-card>
   </mat-expansion-panel>
 </div>

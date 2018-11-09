@@ -29,7 +29,7 @@ export class ChessEngineService {
         return this.http.get(`${this.formatGameUri(gameId)}/fen`);
     }
 
-    public getGames(): Observable<GameOption[]> {
+    public getGames(): Observable<any> {
         return this.http.get(`${environment.configuration.engineUri}/games`);
     }
 }

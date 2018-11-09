@@ -33,6 +33,10 @@ export class BoardComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.setBoard();
+  }
+
+  setBoard() {
     this.board = ChessBoard('board', this.config);
   }
 
@@ -96,8 +100,8 @@ export class BoardComponent implements OnInit {
 
   setGame() {
     return this.engineService.getGame(this.gameId)
-    .toPromise()
-    .then(response => this.setBoardPosition(response.Board));
+      .toPromise()
+      .then(response => this.setBoardPosition(response.Board));
   }
 
   private setBoardPosition(fenBoard: string) {
@@ -117,5 +121,20 @@ export class BoardComponent implements OnInit {
   newGame() {
     this.gameId = Math.random().toString().replace('.', '');
     this.setGame();
+  }
+
+  rotate() {
+    this.config.position = this.board.position();
+    this.switchOrientation();
+    this.setBoard();
+  }
+
+  private switchOrientation() {
+    this.orientation = this.orientation === 'white' ? 'black' : 'white';
+    this.config.orientation = this.orientation;
+  }
+
+  cpuPlay() {
+    return this.getBestMove().then(cpuMove => this.displayCpuMove(cpuMove));
   }
 }
