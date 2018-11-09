@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { IEngineService } from '../contracts/engine/engine.service';
+import { GameOption } from '../contracts/model/game.option';
 
 @Injectable({
     providedIn: 'root',
@@ -26,5 +27,9 @@ export class ChessEngineService {
 
     public getGame(gameId: string): Observable<any> {
         return this.http.get(`${this.formatGameUri(gameId)}/fen`);
+    }
+
+    public getGames(): Observable<GameOption[]> {
+        return this.http.get(`${environment.configuration.engineUri}/games`);
     }
 }

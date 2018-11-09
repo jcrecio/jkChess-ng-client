@@ -1,6 +1,28 @@
 <div class="inner-board-container">
-  <div id="board" style="width: 400px"></div>
-  <input [(ngModel)]="gameId" placeholder="game ID">
-  <button (click)="setGame()">Set game</button>
-  <button (click)="newGame()">New game</button>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Game settings
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-card>
+      <mat-form-field id="game-selector">
+        <input matInput id="game-field-id" placeholder="Game" aria-label="Game" [matAutocomplete]="auto" [(ngModel)]="gameId">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let gameOption of gameOptions" [value]="gameOption.gameId">
+            <small>Game: {{gameOption.gameId}}</small>
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      <br>
+      <button color="secondary" mat-raised-button (click)="setGame()">Load game</button>
+      <button color="primary" mat-raised-button (click)="newGame()">New game</button>
+    </mat-card>
+  </mat-expansion-panel>
+</div>
+<div class="inner-board-container">
+  <mat-card>
+    <div id="board" style="width: 500px"></div>
+  </mat-card>
+
 </div>

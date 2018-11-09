@@ -1,10 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Injectable } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { IEngineService } from '../../contracts/engine/engine.service';
 import { ChessEngineService } from '../../engine/chess.engine.service';
+import { GameOption } from '../../contracts/model/game.option';
 
 declare var $: any;
 declare var ChessBoard: any;
@@ -22,9 +23,13 @@ export class BoardComponent implements OnInit {
   orientation = 'white';
   config: any;
   pendingMove: string;
+  gameOptions: GameOption[];
 
-  constructor(private http: HttpClient, private engineService: ChessEngineService) {
+  constructor(private engineService: ChessEngineService) {
     this.config = this.getBoardConfig('start');
+    this.engineService.getGames().subscribe(response => {
+       this.gameOptions = response['Games'].map(g => { return { gameId: g } });
+      });
   }
 
   ngOnInit() {
