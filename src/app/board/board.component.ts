@@ -129,8 +129,12 @@ export class BoardComponent implements OnInit {
   }
 
   newGame() {
-    this.gameId = Math.random().toString().replace('.', '');
+    this.gameId = this.generateRandomId();
     this.setGame();
+  }
+
+  private generateRandomId(): string {
+    return Math.random().toString().replace('.', '');
   }
 
   rotate() {
