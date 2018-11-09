@@ -51,7 +51,8 @@ export class BoardComponent implements OnInit {
 
     return this.doMove(move)
       .then(_ => this.getBestMove())
-      .then(cpuMove => this.displayCpuMove(cpuMove));
+      .then(cpuMove => this.displayCpuMove(cpuMove))
+      .then(_ => this.updatePosition());
   }
 
   moveRockIfCastle(moveCoordinates) {
@@ -103,6 +104,10 @@ export class BoardComponent implements OnInit {
     return `${uciMove.substring(0, 2)}-${uciMove.substring(2, 4)}`;
   }
 
+  private updatePosition() {
+    this.config.position = this.board.position();
+  }
+
   setGame() {
     return this.engineService.getGame(this.gameId)
       .toPromise()
@@ -129,7 +134,6 @@ export class BoardComponent implements OnInit {
   }
 
   rotate() {
-    this.config.position = this.board.position();
     this.switchOrientation();
     this.setBoard();
   }
