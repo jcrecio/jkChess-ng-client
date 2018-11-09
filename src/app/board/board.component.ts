@@ -24,13 +24,17 @@ export class BoardComponent implements OnInit {
   board: any;
   orientation = 'white';
   config: any;
-  pendingMove: string;
 
   constructor(private engineService: ChessEngineService) {
     this.config = this.getBoardConfig('start');
-    this.engineService.getGames().subscribe(response => {
-       this.gameOptions = response['Games'].map(g => { return { gameId: g } });
+
+    this.getGames().subscribe(response => {
+       this.gameOptions = response.Games.map(g => { return { gameId: g } });
       });
+  }
+
+  private getGames() {
+    return this.engineService.getGames();
   }
 
   ngOnInit() {
@@ -50,6 +54,18 @@ export class BoardComponent implements OnInit {
       .then(cpuMove => this.displayCpuMove(cpuMove));
   }
 
+  moveRockIfCastle(moveCoordinates) {
+    if (moveCoordinates === 'e1g1') {
+      this.board.move('h1-f1');
+    } else if (moveCoordinates === 'e1c1') {
+      this.board.move('a1-d1');
+    } else if (moveCoordinates === 'e8g8') {
+      this.board.move('h8-f8');
+    } else if (moveCoordinates === 'e8a8') {
+      this.board.move('a8-d8');
+    }
+  }
+
   private doMove(move) {
     return this.engineService.doMove(this.gameId, move).toPromise();
   }
@@ -63,18 +79,6 @@ export class BoardComponent implements OnInit {
     this.moveCpu(this.formatUciMoveToUiMove(cpuMoveUci));
 
     return cpuMoveUci;
-  }
-
-  moveRockIfCastle(moveCoordinates) {
-    if (moveCoordinates === 'e1g1') {
-      this.board.move('h1-f1');
-    } else if (moveCoordinates === 'e1c1') {
-      this.board.move('a1-d1');
-    } else if (moveCoordinates === 'e8g8') {
-      this.board.move('h8-f8');
-    } else if (moveCoordinates === 'e8a8') {
-      this.board.move('a8-d8');
-    }
   }
 
   moveCpu(moveCoordinates) {
