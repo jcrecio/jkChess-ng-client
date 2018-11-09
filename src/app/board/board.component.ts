@@ -19,11 +19,12 @@ declare var Math: any;
 export class BoardComponent implements OnInit {
 
   @Input() gameId: string;
+  gameOptions: GameOption[];
+
   board: any;
   orientation = 'white';
   config: any;
   pendingMove: string;
-  gameOptions: GameOption[];
 
   constructor(private engineService: ChessEngineService) {
     this.config = this.getBoardConfig('start');
@@ -136,5 +137,17 @@ export class BoardComponent implements OnInit {
 
   cpuPlay() {
     return this.getBestMove().then(cpuMove => this.displayCpuMove(cpuMove));
+  }
+
+  undo() {
+    return this.undoMove(this.gameId).then(response => {
+      this.setBoardPosition(response.PreviousPosition);
+
+      return response.PreviousPosition;
+    });
+  }
+
+  undoMove(gameId) {
+    return this.engineService.undoMove(this.gameId).toPromise();
   }
 }

@@ -32,4 +32,8 @@ export class ChessEngineService {
     public getGames(): Observable<any> {
         return this.http.get(`${environment.configuration.engineUri}/games`);
     }
+
+    public undoMove(gameId): Observable<any> {
+        return this.http.post(`${this.formatGameUri(gameId)}/undo`, {});
+    }
 }

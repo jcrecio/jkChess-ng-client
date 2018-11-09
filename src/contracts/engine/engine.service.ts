@@ -6,4 +6,5 @@ export interface IEngineService {
     getBestMove(gameId: string): Observable<any>;
     getGame(gameId: string): Observable<any>;
     getGames(): Observable<any>;
+    undoMove(gameId): Observable<any>;
 }
