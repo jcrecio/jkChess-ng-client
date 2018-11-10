@@ -115,7 +115,8 @@ export class BoardComponent implements OnInit {
   }
 
   private setBoardPosition(fenBoard: string) {
-    this.board = ChessBoard('board', this.getBoardConfig(fenBoard));
+    this.config = this.getBoardConfig(fenBoard);
+    this.board = ChessBoard('board', this.config);
   }
 
   private getBoardConfig(position) {
