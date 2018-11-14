@@ -175,6 +175,7 @@ export class BoardComponent implements OnInit {
 
   delete(gameId) {
     return this.deleteGame(this.gameId).then(response => {
+      this.gameId = undefined;
       return this.loadGames();
     });
   }

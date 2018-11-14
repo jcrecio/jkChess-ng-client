@@ -7,7 +7,11 @@
     </mat-expansion-panel-header>
     <mat-card>
       <mat-form-field id="game-selector">
-        <input matInput id="game-field-id" placeholder="Game" console-label="Game" [matAutocomplete]="auto" [(ngModel)]="gameId">
+        <input matInput id="game-field-id" 
+               placeholder="Game" 
+               console-label="Game" 
+               [matAutocomplete]="auto" 
+               [(ngModel)]="gameId">
         <mat-autocomplete #auto="matAutocomplete">
           <mat-option *ngFor="let gameOption of gameOptions" [value]="gameOption.gameId">
             <small>{{gameOption.gameId}}</small>
