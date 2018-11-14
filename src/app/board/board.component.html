@@ -14,6 +14,7 @@
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
+
       <br>
       <button class="game_button" color="secondary" mat-raised-button (click)="setGame()">Load game</button>
       <button class="game_button" color="primary" mat-raised-button (click)="newGame()">New game</button>
@@ -27,8 +28,11 @@
         <mat-icon>arrow_forward</mat-icon>
       </button>
       <button class="option_button" (click)="undo()" mat-mini-fab color="primary">
-          <mat-icon>undo</mat-icon>
-        </button>
+        <mat-icon>undo</mat-icon>
+      </button>
+      <button class="delete_button" (click)="delete()" mat-mini-fab color="warn">
+        <mat-icon>delete</mat-icon>
+      </button>
     </mat-card>
   </mat-expansion-panel>
 </div>

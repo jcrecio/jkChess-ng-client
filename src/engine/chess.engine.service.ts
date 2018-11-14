@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { IEngineService } from '../contracts/engine/engine.service';
 import { GameOption } from '../contracts/model/game.option';
@@ -11,6 +11,10 @@ import { GameOption } from '../contracts/model/game.option';
 export class ChessEngineService {
     constructor(private http: HttpClient) {
 
+    }
+
+    public createGame(): Observable<any> {
+        return this.http.post(`${environment.configuration.engineUri}/games/new`, {});
     }
 
     public doMove(gameId: string, move: any): Observable<any> {
@@ -35,5 +39,9 @@ export class ChessEngineService {
 
     public undoMove(gameId): Observable<any> {
         return this.http.post(`${this.formatGameUri(gameId)}/undo`, {});
+    }
+
+    public deleteGame(gameId): Observable<any> {
+        return this.http.delete(`${environment.configuration.engineUri}/game/${gameId}/delete`);
     }
 }

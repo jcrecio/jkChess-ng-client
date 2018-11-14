@@ -19,7 +19,7 @@ declare var Math: any;
 export class BoardComponent implements OnInit {
 
   @Input() gameId: string;
-  gameOptions: GameOption[];
+  gameOptions: Array<GameOption>;
 
   board: any;
   orientation = 'white';
@@ -28,9 +28,7 @@ export class BoardComponent implements OnInit {
   constructor(private engineService: ChessEngineService) {
     this.config = this.getBoardConfig('start');
 
-    this.getGames().subscribe(response => {
-       this.gameOptions = response.Games.map(g => { return { gameId: g } });
-      });
+    this.loadGames();
   }
 
   private getGames() {
@@ -109,6 +107,7 @@ export class BoardComponent implements OnInit {
   }
 
   setGame() {
+    this.gameOptions.push({ gameId: this.gameId});
     return this.engineService.getGame(this.gameId)
       .toPromise()
       .then(response => this.setBoardPosition(response.Board));
@@ -129,13 +128,23 @@ export class BoardComponent implements OnInit {
     };
   }
 
-  newGame() {
-    this.gameId = this.generateRandomId();
-    this.setGame();
+  private loadGames() {
+    return this.getGames().subscribe(response => {
+      this.gameOptions = response.Games.map(g => { return <GameOption>{ gameId: g } });
+     });
   }
 
-  private generateRandomId(): string {
-    return Math.random().toString().replace('.', '');
+  newGame() {
+    return this.createGame().then(response => {
+      this.gameId = response.GameId;
+      this.setGame();
+
+      return response;
+    });
+  }
+
+  private createGame() {
+    return this.engineService.createGame().toPromise();
   }
 
   rotate() {
@@ -160,7 +169,17 @@ export class BoardComponent implements OnInit {
     });
   }
 
-  undoMove(gameId) {
+  private undoMove(gameId) {
     return this.engineService.undoMove(this.gameId).toPromise();
+  }
+
+  delete(gameId) {
+    return this.deleteGame(this.gameId).then(response => {
+      return this.loadGames();
+    });
+  }
+
+  private deleteGame(gameId) {
+    return this.engineService.deleteGame(this.gameId).toPromise();
   }
 }

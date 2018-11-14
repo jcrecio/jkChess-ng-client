@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChessEngineService } from '../engine/chess.engine.service';
 import { BoardComponent } from './board/board.component';
@@ -16,6 +16,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { UserRequestInterceptor } from '../interceptors/http.interceptor';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     MatIconModule,
     BrowserAnimationsModule
   ],
-  providers: [ChessEngineService],
+  providers: [
+    ChessEngineService,
+    { provide: HTTP_INTERCEPTORS, useClass: UserRequestInterceptor, multi: true } ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
