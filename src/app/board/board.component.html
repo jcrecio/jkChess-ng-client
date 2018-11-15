@@ -7,11 +7,7 @@
     </mat-expansion-panel-header>
     <mat-card>
       <mat-form-field id="game-selector">
-        <input matInput id="game-field-id" 
-               placeholder="Game" 
-               console-label="Game" 
-               [matAutocomplete]="auto" 
-               [(ngModel)]="gameId">
+        <input matInput id="game-field-id" placeholder="Game" console-label="Game" [matAutocomplete]="auto" [(ngModel)]="gameId">
         <mat-autocomplete #auto="matAutocomplete">
           <mat-option *ngFor="let gameOption of gameOptions" [value]="gameOption.gameId">
             <small>{{gameOption.gameId}}</small>
@@ -20,7 +16,7 @@
       </mat-form-field>
 
       <br>
-      <button class="game_button" color="secondary" mat-raised-button (click)="setGame()">Load game</button>
+      <button class="game_button" color="secondary" [disabled]="gameIsNotDefined()" mat-raised-button (click)="setGame()">Load game</button>
       <button class="game_button" color="primary" mat-raised-button (click)="newGame()">New game</button>
     </mat-card>
     <mat-card>
@@ -28,13 +24,13 @@
       <button class="option_button" (click)="rotate()" mat-mini-fab color="primary" aria-placeholder="sd">
         <mat-icon>autorenew</mat-icon>
       </button>
-      <button class="option_button" (click)="cpuPlay()" mat-mini-fab color="primary">
+      <button class="option_button" (click)="cpuPlay()" [disabled]="gameIsNotLoaded()" mat-mini-fab color="primary">
         <mat-icon>arrow_forward</mat-icon>
       </button>
-      <button class="option_button" (click)="undo()" mat-mini-fab color="primary">
+      <button class="option_button" (click)="undo()" [disabled]="gameIsNotLoaded()" mat-mini-fab color="primary">
         <mat-icon>undo</mat-icon>
       </button>
-      <button class="delete_button" (click)="delete()" mat-mini-fab color="warn">
+      <button class="delete_button" (click)="delete()" [disabled]="gameIsNotDefined()" mat-mini-fab color="warn">
         <mat-icon>delete</mat-icon>
       </button>
     </mat-card>

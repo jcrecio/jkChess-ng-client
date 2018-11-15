@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, DoCheck, KeyValueDiffers, KeyValueDiffer } from '@angular/core';
 import { Injectable } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
@@ -16,19 +16,20 @@ declare var Math: any;
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.sass']
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent implements OnInit, DoCheck {
 
   @Input() gameId: string;
+  gameLoaded: boolean;
   gameOptions: Array<GameOption>;
 
   board: any;
   orientation = 'white';
   config: any;
 
-  constructor(private engineService: ChessEngineService) {
-    this.config = this.getBoardConfig('start');
+  differ: KeyValueDiffer<string, any>;
 
-    this.loadGames();
+  constructor(private differs: KeyValueDiffers, private engineService: ChessEngineService) {
+    this.differ = this.differs.find({}).create();
   }
 
   private getGames() {
@@ -36,7 +37,36 @@ export class BoardComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.setInitialBoardPosition();
+    this.loadGames();
+    this.gameId = undefined;
+  }
+
+  private setInitialBoardPosition() {
+    this.config = this.getBoardConfig('start');
     this.setBoard();
+  }
+
+  // ngOnChanges(changes: SimpleChanges) {
+  //   if (!changes.gameId.currentValue) {
+  //     this.gameLoaded = false;
+  //   }
+  // }
+
+  ngDoCheck() {
+    const change = this.differ.diff(this);
+    if (change) {
+      change.forEachChangedItem(item => {
+        if (item.key === 'gameId') {
+          if (item.currentValue === undefined) {
+            this.gameLoaded = false;
+          }
+          if (item.currentValue !== item.previousValue) {
+            this.gameLoaded = false;
+          }
+        }
+      });
+    }
   }
 
   setBoard() {
@@ -60,7 +90,7 @@ export class BoardComponent implements OnInit {
       this.board.move('a1-d1');
     } else if (moveCoordinates === 'e8g8') {
       this.board.move('h8-f8');
-    } else if (moveCoordinates === 'e8a8') {
+    } else if (moveCoordinates === 'e8c8') {
       this.board.move('a8-d8');
     }
   }
@@ -107,10 +137,13 @@ export class BoardComponent implements OnInit {
   }
 
   setGame() {
-    this.gameOptions.push({ gameId: this.gameId});
+    this.gameOptions.push({ gameId: this.gameId });
     return this.engineService.getGame(this.gameId)
       .toPromise()
-      .then(response => this.setBoardPosition(response.Board));
+      .then(response => {
+        this.setBoardPosition(response.Board);
+        this.gameLoaded = true;
+      });
   }
 
   private setBoardPosition(fenBoard: string) {
@@ -131,7 +164,7 @@ export class BoardComponent implements OnInit {
   private loadGames() {
     return this.getGames().subscribe(response => {
       this.gameOptions = response.Games.map(g => { return <GameOption>{ gameId: g } });
-     });
+    });
   }
 
   newGame() {
@@ -176,11 +209,20 @@ export class BoardComponent implements OnInit {
   delete(gameId) {
     return this.deleteGame(this.gameId).then(response => {
       this.gameId = undefined;
+      this.setInitialBoardPosition();
       return this.loadGames();
     });
   }
 
   private deleteGame(gameId) {
     return this.engineService.deleteGame(this.gameId).toPromise();
+  }
+
+  gameIsNotDefined() {
+    return !this.gameId;
+  }
+
+  gameIsNotLoaded() {
+    return !this.gameLoaded;
   }
 }
