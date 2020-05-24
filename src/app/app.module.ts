@@ -42,7 +42,12 @@ import { UserRequestInterceptor } from '../interceptors/http.interceptor';
   ],
   providers: [
     ChessEngineService,
-    { provide: HTTP_INTERCEPTORS, useClass: UserRequestInterceptor, multi: true } ],
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: UserRequestInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

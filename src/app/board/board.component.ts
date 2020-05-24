@@ -1,49 +1,56 @@
-import { Component, OnInit, Input, DoCheck, KeyValueDiffers, KeyValueDiffer } from '@angular/core';
-import { Injectable } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
-import { IEngineService } from '../../contracts/engine/engine.service';
-import { ChessEngineService } from '../../engine/chess.engine.service';
-import { GameOption } from '../../contracts/model/game.option';
+import {
+  Component,
+  OnInit,
+  Input,
+  DoCheck,
+  KeyValueDiffers,
+  KeyValueDiffer,
+} from "@angular/core";
+import { Injectable } from "@angular/core";
+import { FormControl } from "@angular/forms";
+import { Observable } from "rxjs";
+import { environment } from "../../environments/environment";
+import { IEngineService } from "../../contracts/engine/engine.service";
+import { ChessEngineService } from "../../engine/chess.engine.service";
+import { GameOption } from "../../contracts/model/game.option";
 
 declare var $: any;
 declare var ChessBoard: any;
 declare var Math: any;
 
 @Component({
-  selector: 'app-board',
-  templateUrl: './board.component.html',
-  styleUrls: ['./board.component.sass']
+  selector: "app-board",
+  templateUrl: "./board.component.html",
+  styleUrls: ["./board.component.sass"],
 })
 export class BoardComponent implements OnInit, DoCheck {
-
   @Input() gameId: string;
+
   gameLoaded: boolean;
   gameOptions: Array<GameOption>;
 
   board: any;
-  orientation = 'white';
+  orientation = "white";
   config: any;
 
   differ: KeyValueDiffer<string, any>;
 
-  constructor(private differs: KeyValueDiffers, private engineService: ChessEngineService) {
+  constructor(
+    private differs: KeyValueDiffers,
+    private chesEngineService: ChessEngineService
+  ) {
     this.differ = this.differs.find({}).create();
-  }
-
-  private getGames() {
-    return this.engineService.getGames();
   }
 
   ngOnInit() {
     this.setInitialBoardPosition();
     this.loadGames();
+
     this.gameId = undefined;
   }
 
   private setInitialBoardPosition() {
-    this.config = this.getBoardConfig('start');
+    this.config = this.getBoardConfig("start");
     this.setBoard();
   }
 
@@ -54,23 +61,23 @@ export class BoardComponent implements OnInit, DoCheck {
   // }
 
   ngDoCheck() {
-    const change = this.differ.diff(this);
-    if (change) {
-      change.forEachChangedItem(item => {
-        if (item.key === 'gameId') {
-          if (item.currentValue === undefined) {
-            this.gameLoaded = false;
-          }
-          if (item.currentValue !== item.previousValue) {
-            this.gameLoaded = false;
-          }
+    const changes = this.differ.diff(this);
+    if (!changes) return;
+
+    changes.forEachChangedItem(change => {
+      if (change.key === "gameId") {
+        if (change.currentValue === undefined) {
+          this.gameLoaded = false;
         }
-      });
-    }
+        if (change.currentValue !== change.previousValue) {
+          this.gameLoaded = false;
+        }
+      }
+    });
   }
 
   setBoard() {
-    this.board = ChessBoard('board', this.config);
+    this.board = ChessBoard("board", this.config);
   }
 
   onDropHandler(source, target, piece, newPos, oldPos, orientation) {
@@ -78,29 +85,29 @@ export class BoardComponent implements OnInit, DoCheck {
     this.moveRockIfCastle(move);
 
     return this.doMove(move)
-      .then(_ => this.getBestMove())
-      .then(cpuMove => this.displayCpuMove(cpuMove))
-      .then(_ => this.updatePosition());
+      .then((_) => this.getBestMove())
+      .then((cpuMove) => this.displayCpuMove(cpuMove))
+      .then((_) => this.updatePosition());
   }
 
   moveRockIfCastle(moveCoordinates) {
-    if (moveCoordinates === 'e1g1') {
-      this.board.move('h1-f1');
-    } else if (moveCoordinates === 'e1c1') {
-      this.board.move('a1-d1');
-    } else if (moveCoordinates === 'e8g8') {
-      this.board.move('h8-f8');
-    } else if (moveCoordinates === 'e8c8') {
-      this.board.move('a8-d8');
+    if (moveCoordinates === "e1g1") {
+      this.board.move("h1-f1");
+    } else if (moveCoordinates === "e1c1") {
+      this.board.move("a1-d1");
+    } else if (moveCoordinates === "e8g8") {
+      this.board.move("h8-f8");
+    } else if (moveCoordinates === "e8c8") {
+      this.board.move("a8-d8");
     }
   }
 
   private doMove(move) {
-    return this.engineService.doMove(this.gameId, move).toPromise();
+    return this.chesEngineService.doMove(this.gameId, move).toPromise();
   }
 
   private getBestMove() {
-    return this.engineService.getBestMove(this.gameId).toPromise();
+    return this.chesEngineService.getBestMove(this.gameId).toPromise();
   }
 
   private displayCpuMove(cpuMove) {
@@ -111,18 +118,18 @@ export class BoardComponent implements OnInit, DoCheck {
   }
 
   moveCpu(moveCoordinates) {
-    if (moveCoordinates === 'e1-g1') {
-      this.board.move('e1-g1');
-      this.board.move('h1-f1');
-    } else if (moveCoordinates === 'e1-a1') {
-      this.board.move('e1-c1');
-      this.board.move('a1-d1');
-    } else if (moveCoordinates === 'e8-g8') {
-      this.board.move('e8-g8');
-      this.board.move('h8-f8');
-    } else if (moveCoordinates === 'e8-c8') {
-      this.board.move('e8-c8');
-      this.board.move('a8-d8');
+    if (moveCoordinates === "e1-g1") {
+      this.board.move("e1-g1");
+      this.board.move("h1-f1");
+    } else if (moveCoordinates === "e1-a1") {
+      this.board.move("e1-c1");
+      this.board.move("a1-d1");
+    } else if (moveCoordinates === "e8-g8") {
+      this.board.move("e8-g8");
+      this.board.move("h8-f8");
+    } else if (moveCoordinates === "e8-c8") {
+      this.board.move("e8-c8");
+      this.board.move("a8-d8");
     } else {
       this.board.move(moveCoordinates);
     }
@@ -138,9 +145,10 @@ export class BoardComponent implements OnInit, DoCheck {
 
   setGame() {
     this.gameOptions.push({ gameId: this.gameId });
-    return this.engineService.getGame(this.gameId)
+    return this.chesEngineService
+      .getGame(this.gameId)
       .toPromise()
-      .then(response => {
+      .then((response) => {
         this.setBoardPosition(response.Board);
         this.gameLoaded = true;
       });
@@ -148,7 +156,7 @@ export class BoardComponent implements OnInit, DoCheck {
 
   private setBoardPosition(fenBoard: string) {
     this.config = this.getBoardConfig(fenBoard);
-    this.board = ChessBoard('board', this.config);
+    this.board = ChessBoard("board", this.config);
   }
 
   private getBoardConfig(position) {
@@ -162,13 +170,19 @@ export class BoardComponent implements OnInit, DoCheck {
   }
 
   private loadGames() {
-    return this.getGames().subscribe(response => {
-      this.gameOptions = response.Games.map(g => { return <GameOption>{ gameId: g } });
+    return this.getGames().subscribe((response) => {
+      this.gameOptions = response.Games.map((g) => {
+        return <GameOption>{ gameId: g };
+      });
     });
   }
 
+  private getGames() {
+    return this.chesEngineService.getGames();
+  }
+
   newGame() {
-    return this.createGame().then(response => {
+    return this.createGame().then((response) => {
       this.gameId = response.GameId;
       this.setGame();
 
@@ -177,7 +191,7 @@ export class BoardComponent implements OnInit, DoCheck {
   }
 
   private createGame() {
-    return this.engineService.createGame().toPromise();
+    return this.chesEngineService.createGame().toPromise();
   }
 
   rotate() {
@@ -186,16 +200,16 @@ export class BoardComponent implements OnInit, DoCheck {
   }
 
   private switchOrientation() {
-    this.orientation = this.orientation === 'white' ? 'black' : 'white';
+    this.orientation = this.orientation === "white" ? "black" : "white";
     this.config.orientation = this.orientation;
   }
 
   cpuPlay() {
-    return this.getBestMove().then(cpuMove => this.displayCpuMove(cpuMove));
+    return this.getBestMove().then((cpuMove) => this.displayCpuMove(cpuMove));
   }
 
   undo() {
-    return this.undoMove(this.gameId).then(response => {
+    return this.undoMove(this.gameId).then((response) => {
       this.setBoardPosition(response.PreviousPosition);
 
       return response.PreviousPosition;
@@ -203,11 +217,11 @@ export class BoardComponent implements OnInit, DoCheck {
   }
 
   private undoMove(gameId) {
-    return this.engineService.undoMove(this.gameId).toPromise();
+    return this.chesEngineService.undoMove(this.gameId).toPromise();
   }
 
   delete(gameId) {
-    return this.deleteGame(this.gameId).then(response => {
+    return this.deleteGame(this.gameId).then((response) => {
       this.gameId = undefined;
       this.setInitialBoardPosition();
       return this.loadGames();
@@ -215,7 +229,7 @@ export class BoardComponent implements OnInit, DoCheck {
   }
 
   private deleteGame(gameId) {
-    return this.engineService.deleteGame(this.gameId).toPromise();
+    return this.chesEngineService.deleteGame(this.gameId).toPromise();
   }
 
   gameIsNotDefined() {

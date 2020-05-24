@@ -1,0 +1,2 @@
+docker build -t jcrecio/jkchess-ng-client:latest -f ./Dockerfile .
+docker push jcrecio/jkchess-ng-client:latest
